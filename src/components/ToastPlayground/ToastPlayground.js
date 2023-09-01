@@ -1,20 +1,36 @@
 import React, { useState } from "react";
 
 import Button from "../Button";
-
+import Toast from "../Toast/Toast";
 import styles from "./ToastPlayground.module.css";
 
 const VARIANT_OPTIONS = ["notice", "warning", "success", "error"];
 
 function ToastPlayground() {
-  const [messageType, setMessageType] = useState("");
+  const [messageType, setMessageType] = useState(undefined);
+  const [message, setMessage] = useState(undefined);
+  const [toastShow, setToastShow] = useState(false);
+
+  function handleSubmit() {
+    if (message == undefined || messageType == undefined) {
+      alert("Please fill the form");
+      return;
+    }
+    setToastShow(true);
+  }
   return (
     <div className={styles.wrapper}>
       <header>
         <img alt="Cute toast mascot" src="/toast.png" />
         <h1>Toast Playground</h1>
       </header>
-
+      {toastShow && (
+        <Toast
+          messageType={messageType}
+          message={message}
+          setToastShow={setToastShow}
+        />
+      )}
       <div className={styles.controlsWrapper}>
         <div className={styles.row}>
           <label
@@ -25,7 +41,11 @@ function ToastPlayground() {
             Message
           </label>
           <div className={styles.inputWrapper}>
-            <textarea id="message" className={styles.messageInput} />
+            <textarea
+              id="message"
+              className={styles.messageInput}
+              onChange={(e) => setMessage(e.target.value)}
+            />
           </div>
         </div>
 
@@ -55,7 +75,7 @@ function ToastPlayground() {
         <div className={styles.row}>
           <div className={styles.label} />
           <div className={`${styles.inputWrapper} ${styles.radioWrapper}`}>
-            <Button>Pop Toast!</Button>
+            <Button onClick={handleSubmit}>Pop Toast!</Button>
           </div>
         </div>
       </div>
