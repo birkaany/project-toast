@@ -1,41 +1,34 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 
 import Button from "../Button";
-import Toast from "../Toast/Toast";
 import styles from "./ToastPlayground.module.css";
 import ToastShelf from "../ToastShelf/ToastShelf";
+import { ToastContext } from "../ToastProvider/ToastProvider";
 
 const VARIANT_OPTIONS = ["notice", "warning", "success", "error"];
 
 function ToastPlayground() {
   const [messageType, setMessageType] = useState("");
   const [message, setMessage] = useState("");
-  const [messageList, setMessageList] = useState([]);
+  const { createToast, messageList } = useContext(ToastContext);
+
   function handleSubmit(e) {
     e.preventDefault();
     if (message == "" || messageType == "") {
       alert("Please fill the form");
       return;
     }
-    setMessageList((prevState) => [
-      ...prevState,
-      { id: crypto.randomUUID(), message: message, type: messageType },
-    ]);
+    createToast(message, messageType);
     setMessage("");
   }
-  function handleDismiss(id) {
-    const nextToasts = messageList.filter((message) => {
-      return message.id !== id;
-    });
-    setMessageList(nextToasts);
-  }
+
   return (
     <div className={styles.wrapper}>
       <header>
         <img alt="Cute toast mascot" src="/toast.png" />
         <h1>Toast Playground</h1>
       </header>
-      <ToastShelf messageList={messageList} handleDismiss={handleDismiss} />
+      <ToastShelf messageList={messageList} />
       <form className={styles.controlsWrapper} onSubmit={handleSubmit}>
         <div className={styles.row}>
           <label
