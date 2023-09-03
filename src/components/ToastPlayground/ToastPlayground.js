@@ -3,20 +3,31 @@ import React, { useState } from "react";
 import Button from "../Button";
 import Toast from "../Toast/Toast";
 import styles from "./ToastPlayground.module.css";
+import ToastShelf from "../ToastShelf/ToastShelf";
 
 const VARIANT_OPTIONS = ["notice", "warning", "success", "error"];
 
 function ToastPlayground() {
-  const [messageType, setMessageType] = useState(undefined);
-  const [message, setMessage] = useState(undefined);
-  const [toastShow, setToastShow] = useState(false);
-
-  function handleSubmit() {
-    if (message == undefined || messageType == undefined) {
+  const [messageType, setMessageType] = useState("");
+  const [message, setMessage] = useState("");
+  const [messageList, setMessageList] = useState([]);
+  function handleSubmit(e) {
+    e.preventDefault();
+    if (message == "" || messageType == "") {
       alert("Please fill the form");
       return;
     }
-    setToastShow(true);
+    setMessageList((prevState) => [
+      ...prevState,
+      { id: crypto.randomUUID(), message: message, type: messageType },
+    ]);
+    setMessage("");
+  }
+  function handleDismiss(id) {
+    const nextToasts = messageList.filter((message) => {
+      return message.id !== id;
+    });
+    setMessageList(nextToasts);
   }
   return (
     <div className={styles.wrapper}>
@@ -24,14 +35,8 @@ function ToastPlayground() {
         <img alt="Cute toast mascot" src="/toast.png" />
         <h1>Toast Playground</h1>
       </header>
-      {toastShow && (
-        <Toast
-          messageType={messageType}
-          message={message}
-          setToastShow={setToastShow}
-        />
-      )}
-      <div className={styles.controlsWrapper}>
+      <ToastShelf messageList={messageList} handleDismiss={handleDismiss} />
+      <form className={styles.controlsWrapper} onSubmit={handleSubmit}>
         <div className={styles.row}>
           <label
             htmlFor="message"
@@ -45,6 +50,7 @@ function ToastPlayground() {
               id="message"
               className={styles.messageInput}
               onChange={(e) => setMessage(e.target.value)}
+              value={message}
             />
           </div>
         </div>
@@ -75,10 +81,10 @@ function ToastPlayground() {
         <div className={styles.row}>
           <div className={styles.label} />
           <div className={`${styles.inputWrapper} ${styles.radioWrapper}`}>
-            <Button onClick={handleSubmit}>Pop Toast!</Button>
+            <Button>Pop Toast!</Button>
           </div>
         </div>
-      </div>
+      </form>
     </div>
   );
 }

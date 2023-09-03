@@ -18,7 +18,7 @@ const ICONS_BY_VARIANT = {
   error: AlertOctagon,
 };
 
-function Toast({ messageType, message, setToastShow }) {
+function Toast({ id, messageType, handleDismiss, children }) {
   const messageTypeStyle = messageType && `${styles[messageType]}`;
   const Tag = ICONS_BY_VARIANT[messageType];
 
@@ -27,11 +27,8 @@ function Toast({ messageType, message, setToastShow }) {
       <div className={styles.iconContainer}>
         <Tag size={24} />
       </div>
-      <p className={styles.content}>{message}</p>
-      <button
-        className={styles.closeButton}
-        onClick={() => setToastShow(false)}
-      >
+      <p className={styles.content}>{children}</p>
+      <button className={styles.closeButton} onClick={() => handleDismiss(id)}>
         <X size={24} />
         <VisuallyHidden>Dismiss message</VisuallyHidden>
       </button>
